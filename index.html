@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Arabic Tutor</title>
+  </head>
+  <body>
+    <div id="app">
+      <section id="screen-idle" class="screen">
+        <h1>Arabic Tutor</h1>
+        <button id="btn-start" class="btn-primary" disabled>Start Lesson</button>
+        <p id="idle-hint" class="hint"></p>
+        <button id="btn-settings" class="btn-link" type="button">Settings</button>
+      </section>
+
+      <section id="screen-lesson" class="screen hidden">
+        <div id="status-indicator" class="status" data-state="listening">
+          <span id="status-label">Listening…</span>
+        </div>
+        <button id="btn-end" class="btn-end" type="button">End Lesson</button>
+      </section>
+
+      <section id="screen-ended" class="screen hidden">
+        <h2 id="ended-title">Lesson saved</h2>
+        <p id="ended-summary" class="hint"></p>
+        <button id="btn-restart" class="btn-primary" type="button">Back to Start</button>
+      </section>
+
+      <div id="settings-panel" class="overlay hidden">
+        <div class="overlay-content">
+          <h2>Settings</h2>
+          <label for="api-key-input">Gemini API key</label>
+          <input id="api-key-input" type="password" autocomplete="off" placeholder="Paste your API key" />
+          <div class="overlay-actions">
+            <button id="btn-save-key" class="btn-primary" type="button">Save</button>
+            <button id="btn-close-settings" class="btn-secondary" type="button">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

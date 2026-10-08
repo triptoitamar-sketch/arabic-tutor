@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Single-user, no-auth app: access is intentionally scoped to exactly
+    // this one document rather than gated by auth. Anyone who extracts the
+    // (non-secret-by-design) Firebase web config from the deployed bundle
+    // could read/overwrite this one doc — acceptable since it only holds
+    // lesson-topic notes, not sensitive data. Everything else is denied
+    // by default (no matching rule).
+    match /lessons/latest {
+      allow read: if true;
+      allow write: if request.resource.data.keys().hasOnly(['summary', 'updatedAt', 'lessonCount'])
+                   && request.resource.data.summary is string
+                   && request.resource.data.summary.size() < 2000;
+    }
+  }
+}

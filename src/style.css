@@ -6,6 +6,7 @@
   --accent: #7c5cff;
   --listening: #3ddc84;
   --speaking: #7c5cff;
+  --connecting: #4a90d9;
   --reconnecting: #ffb020;
   --disconnected: #ff5c5c;
   color-scheme: dark;
@@ -126,6 +127,10 @@ button {
   background: var(--speaking);
 }
 
+.status[data-state='connecting'] {
+  background: var(--connecting);
+}
+
 .status[data-state='reconnecting'] {
   background: var(--reconnecting);
   color: #1a1a1a;
@@ -133,6 +138,39 @@ button {
 
 .status[data-state='disconnected'] {
   background: var(--disconnected);
+}
+
+/* Mic activity meter — confirms the mic is actually picking up sound. */
+.mic-meter {
+  width: 220px;
+  height: 10px;
+  border-radius: 6px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.mic-meter-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--listening);
+  transition: width 60ms linear;
+}
+
+.debug-log {
+  width: 100%;
+  max-width: 480px;
+  height: 160px;
+  overflow-y: auto;
+  background: #0a090d;
+  color: #9ae6b4;
+  border: 1px solid #2a2832;
+  border-radius: 10px;
+  padding: 10px;
+  font: 12px/1.4 ui-monospace, Consolas, monospace;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: 110px; /* keep clear of the fixed End Lesson button */
 }
 
 .overlay {

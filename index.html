@@ -16,9 +16,13 @@
       </section>
 
       <section id="screen-lesson" class="screen hidden">
-        <div id="status-indicator" class="status" data-state="listening">
-          <span id="status-label">Listening…</span>
+        <div id="status-indicator" class="status" data-state="connecting">
+          <span id="status-label">Connecting…</span>
         </div>
+        <div class="mic-meter" title="Mic input level — should move while you talk">
+          <div id="mic-meter-fill" class="mic-meter-fill"></div>
+        </div>
+        <pre id="debug-log" class="debug-log" aria-label="Debug log"></pre>
         <button id="btn-end" class="btn-end" type="button">End Lesson</button>
       </section>
 

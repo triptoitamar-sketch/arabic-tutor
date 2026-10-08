@@ -1,6 +1,9 @@
 // Verify this against https://ai.google.dev/gemini-api/docs/live before relying on it —
-// Google revises native-audio model ids/preview dates periodically.
-export const NATIVE_AUDIO_MODEL_ID = 'gemini-live-2.5-flash-native-audio';
+// Google revises native-audio model ids periodically. `gemini-live-2.5-flash-native-audio`
+// is Vertex AI naming and does NOT work with a plain AI-Studio API key (Developer API) —
+// that mismatch was the cause of "connects but never responds". gemini-3.8-live is the
+// current GA Developer API native-audio model as of Oct 2026.
+export const NATIVE_AUDIO_MODEL_ID = 'gemini-3.8-live';
 
 export const INPUT_SAMPLE_RATE = 16000;
 export const OUTPUT_SAMPLE_RATE = 24000;

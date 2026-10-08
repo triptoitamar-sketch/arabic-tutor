@@ -4,7 +4,13 @@ import { getLatestSummary, saveSummary } from './persistence/lessonStore.js';
 import { buildSystemInstruction } from './tutor/systemPrompt.js';
 import { LiveTutorSession } from './live/liveSession.js';
 import { setStatus } from './ui/statusIndicator.js';
+import { logDebug, clearDebugLog } from './ui/debugLog.js';
 import * as screens from './ui/screens.js';
+
+function setMicLevel(level) {
+  const fill = document.getElementById('mic-meter-fill');
+  if (fill) fill.style.width = `${Math.min(100, Math.round(level * 400))}%`;
+}
 
 let activeSession = null;
 let wakeLock = null;
@@ -34,28 +40,34 @@ function releaseWakeLock() {
 
 async function startLesson() {
   screens.setStartEnabled(false);
+  clearDebugLog();
+  screens.showLesson(); // show the debug log immediately, before the connection even opens
   const apiKey = getApiKey();
   try {
+    logDebug('Fetching previous lesson summary from Firestore…');
     const lastSummary = await getLatestSummary();
+    logDebug(lastSummary ? `Found previous summary: "${lastSummary.slice(0, 100)}"` : 'No previous summary (first lesson, or Firestore read failed/not configured yet).');
     const systemInstruction = buildSystemInstruction(lastSummary);
 
     activeSession = new LiveTutorSession({
       apiKey,
       systemInstruction,
       onStatusChange: setStatus,
+      onDebug: logDebug,
+      onMicLevel: setMicLevel,
     });
 
     // Must be awaited from within this click-handler call stack so the mic
     // permission prompt is tied to the user's tap.
     await activeSession.start();
     await requestWakeLock();
-    screens.showLesson();
-    setStatus('listening');
   } catch (err) {
     console.error('Failed to start lesson:', err);
-    alert('Could not start the lesson — check microphone permission and your API key, then try again.');
+    logDebug(`❌ Failed to start: ${err.message}`);
+    alert('Could not start the lesson — check the debug log on screen for details.');
     activeSession = null;
     refreshIdleScreen();
+    screens.showIdle();
   }
 }
 
@@ -66,7 +78,9 @@ async function endLesson() {
 
   const summary = await activeSession.endLesson();
   const summaryText = summary || 'Lesson ended; no summary was captured.';
+  logDebug('Saving summary to Firestore…');
   const saved = await saveSummary(summaryText);
+  logDebug(saved ? 'Summary saved.' : '⚠️ Summary save failed (see console for details).');
 
   activeSession.teardown();
   activeSession = null;

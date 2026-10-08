@@ -1,4 +1,5 @@
 const LABELS = {
+  connecting: 'Connecting…',
   listening: 'Listening…',
   speaking: 'Gemini is speaking…',
   reconnecting: 'Reconnecting…',

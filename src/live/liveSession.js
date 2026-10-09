@@ -41,6 +41,7 @@ export class LiveTutorSession {
     this.currentOutputTranscript = '';
     this.awaitingSummary = false;
     this.pendingSummaryResolve = null;
+    this.skipNextTurnComplete = false;
 
     this.micChunkCount = 0;
     this.serverMessageCount = 0;
@@ -131,20 +132,35 @@ export class LiveTutorSession {
         this.onDebug('Barge-in: user interrupted, clearing playback.');
         this.playback.clear();
         this.onStatusChange('listening');
+        if (this.awaitingSummary) {
+          // Our end-of-lesson trigger just interrupted whatever the model was
+          // still saying from before. That turn's upcoming turnComplete is
+          // leftover from the OLD turn, not the summary — discard it rather
+          // than resolving endLesson() with the wrong (truncated) text.
+          this.onDebug('End-of-lesson trigger interrupted an in-progress response — discarding it, waiting for the actual summary.');
+          this.currentOutputTranscript = '';
+          this.skipNextTurnComplete = true;
+        }
       }
       if (content.outputTranscription?.text) {
         this.currentOutputTranscript += content.outputTranscription.text;
       }
       if (content.turnComplete) {
-        if (this.currentOutputTranscript.trim()) {
-          this.onDebug(`Model said: "${this.currentOutputTranscript.trim().slice(0, 120)}"`);
+        if (this.skipNextTurnComplete) {
+          this.skipNextTurnComplete = false;
+          this.currentOutputTranscript = '';
+        } else {
+          const transcript = this.currentOutputTranscript.trim();
+          if (transcript) {
+            this.onDebug(`Model said: "${transcript.slice(0, 120)}"`);
+          }
+          if (this.awaitingSummary && this.pendingSummaryResolve) {
+            this.pendingSummaryResolve(transcript);
+            this.pendingSummaryResolve = null;
+            this.awaitingSummary = false;
+          }
+          this.currentOutputTranscript = '';
         }
-        if (this.awaitingSummary && this.pendingSummaryResolve) {
-          this.pendingSummaryResolve(this.currentOutputTranscript.trim());
-          this.pendingSummaryResolve = null;
-          this.awaitingSummary = false;
-        }
-        this.currentOutputTranscript = '';
       }
     }
 
@@ -200,6 +216,16 @@ export class LiveTutorSession {
   /** Sends the "session ended" trigger and resolves with the model's one-sentence summary (or '' on timeout). */
   async endLesson() {
     if (!this.session) return '';
+
+    // Stop sending mic audio first — if voice-activity-detection picks up
+    // anything (your voice, road noise) while we're waiting for the
+    // summary, it would interrupt that generation too and truncate it.
+    if (this.stopMic) {
+      this.stopMic();
+      this.stopMic = null;
+      this.onDebug('Mic stopped before requesting the lesson summary.');
+    }
+
     this.onDebug('Sending end-of-lesson trigger…');
     this.currentOutputTranscript = '';
     this.awaitingSummary = true;

@@ -22,7 +22,6 @@
         <div class="mic-meter" title="Mic input level — should move while you talk">
           <div id="mic-meter-fill" class="mic-meter-fill"></div>
         </div>
-        <pre id="debug-log" class="debug-log" aria-label="Debug log"></pre>
         <button id="btn-end" class="btn-end" type="button">End Lesson</button>
       </section>
 
@@ -31,6 +30,16 @@
         <p id="ended-summary" class="hint"></p>
         <button id="btn-restart" class="btn-primary" type="button">Back to Start</button>
       </section>
+
+      <!-- Lives outside the screen sections so it survives the lesson -> ended
+           screen switch — stays visible/copyable until you go back to Start. -->
+      <div id="debug-panel" class="debug-panel hidden">
+        <div class="debug-panel-header">
+          <span class="hint">Debug log</span>
+          <button id="btn-copy-log" class="btn-link" type="button">Copy</button>
+        </div>
+        <pre id="debug-log" class="debug-log" aria-label="Debug log"></pre>
+      </div>
 
       <div id="settings-panel" class="overlay hidden">
         <div class="overlay-content">

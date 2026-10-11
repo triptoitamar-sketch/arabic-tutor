@@ -28,8 +28,10 @@ body {
 #app {
   min-height: 100dvh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 20px;
   padding: 16px;
 }
 
@@ -160,9 +162,25 @@ button {
   transition: width 60ms linear;
 }
 
-.debug-log {
+.debug-panel {
   width: 100%;
   max-width: 480px;
+  margin-bottom: 110px; /* keep clear of the fixed End Lesson button, if visible */
+}
+
+.debug-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.debug-panel-header .btn-link {
+  padding: 4px 8px;
+}
+
+.debug-log {
+  width: 100%;
   height: 160px;
   overflow-y: auto;
   background: #0a090d;
@@ -174,7 +192,6 @@ button {
   text-align: left;
   white-space: pre-wrap;
   word-break: break-word;
-  margin-bottom: 110px; /* keep clear of the fixed End Lesson button */
 }
 
 .overlay {

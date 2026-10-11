@@ -1,10 +1,10 @@
 import './style.css';
 import { hasApiKey, getApiKey, setApiKey } from './storage/apiKeyStore.js';
-import { getLatestSummary, saveSummary } from './persistence/lessonStore.js';
+import { getLatestSummary, saveSummary, isFirebaseConfigured } from './persistence/lessonStore.js';
 import { buildSystemInstruction } from './tutor/systemPrompt.js';
 import { LiveTutorSession } from './live/liveSession.js';
 import { setStatus } from './ui/statusIndicator.js';
-import { logDebug, clearDebugLog } from './ui/debugLog.js';
+import { logDebug, clearDebugLog, showDebugPanel, hideDebugPanel, initDebugPanel } from './ui/debugLog.js';
 import * as screens from './ui/screens.js';
 
 function setMicLevel(level) {
@@ -41,9 +41,17 @@ function releaseWakeLock() {
 async function startLesson() {
   screens.setStartEnabled(false);
   clearDebugLog();
-  screens.showLesson(); // show the debug log immediately, before the connection even opens
+  showDebugPanel(); // visible immediately, before the connection even opens
+  screens.showLesson();
   const apiKey = getApiKey();
   try {
+    if (!isFirebaseConfigured()) {
+      logDebug(
+        '⚠️ Firebase is NOT configured yet (src/config/firebaseConfig.js still has REPLACE_ME placeholders). ' +
+          'Lesson summaries cannot be saved or loaded until you set up a real Firebase project — see the README\'s ' +
+          '"Firebase project" section. The lesson itself will still work.',
+      );
+    }
     logDebug('Fetching previous lesson summary from Firestore…');
     const lastSummary = await getLatestSummary();
     logDebug(lastSummary ? `Found previous summary: "${lastSummary.slice(0, 100)}"` : 'No previous summary (first lesson, or Firestore read failed/not configured yet).');
@@ -78,7 +86,11 @@ async function endLesson() {
 
   const summary = await activeSession.endLesson();
   const summaryText = summary || 'Lesson ended; no summary was captured.';
-  logDebug('Saving summary to Firestore…');
+  if (!isFirebaseConfigured()) {
+    logDebug('⚠️ Not saving — Firebase still not configured (see warning above / README).');
+  } else {
+    logDebug('Saving summary to Firestore…');
+  }
   const saved = await saveSummary(summaryText);
   logDebug(saved ? 'Summary saved.' : '⚠️ Summary save failed (see console for details).');
 
@@ -114,12 +126,14 @@ function initSettings() {
 
 function init() {
   initSettings();
+  initDebugPanel();
   refreshIdleScreen();
   screens.showIdle();
 
   document.getElementById('btn-start').addEventListener('click', startLesson);
   document.getElementById('btn-end').addEventListener('click', endLesson);
   document.getElementById('btn-restart').addEventListener('click', () => {
+    hideDebugPanel();
     refreshIdleScreen();
     screens.showIdle();
   });

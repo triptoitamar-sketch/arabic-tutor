@@ -11,6 +11,10 @@ import { FIRESTORE_COLLECTION, FIRESTORE_DOC_ID } from '../config/constants.js';
 
 let db = null;
 
+export function isFirebaseConfigured() {
+  return Boolean(firebaseConfig.projectId) && firebaseConfig.projectId !== 'REPLACE_ME';
+}
+
 function getDb() {
   if (!db) {
     const app = initializeApp(firebaseConfig);

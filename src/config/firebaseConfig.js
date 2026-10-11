@@ -3,10 +3,10 @@
 // (see firestore.rules). Replace these placeholder values with your real
 // project's config (Firebase console → Project settings → Your apps → Web app).
 export const firebaseConfig = {
-  apiKey: 'REPLACE_ME',
-  authDomain: 'REPLACE_ME.firebaseapp.com',
-  projectId: 'REPLACE_ME',
-  storageBucket: 'REPLACE_ME.firebasestorage.app',
-  messagingSenderId: 'REPLACE_ME',
-  appId: 'REPLACE_ME',
+  apiKey: 'AIzaSyDkKm-czlrG-BMsTRk7UCfEvHTCEANSBHo',
+  authDomain: 'arabic-tutor-e0c39.firebaseapp.com',
+  projectId: 'arabic-tutor-e0c39',
+  storageBucket: 'arabic-tutor-e0c39.firebasestorage.app',
+  messagingSenderId: '269054667837',
+  appId: '1:269054667837:web:1d23ce789ecefed12e8e54',
 };

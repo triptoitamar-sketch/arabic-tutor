@@ -165,7 +165,13 @@ button {
 .debug-panel {
   width: 100%;
   max-width: 480px;
-  margin-bottom: 110px; /* keep clear of the fixed End Lesson button, if visible */
+}
+
+/* Only needed while the lesson screen's fixed End Lesson button is showing —
+   applying this unconditionally pushed the log off-screen on the (shorter)
+   ended screen too. */
+.debug-panel.clear-end-button {
+  margin-bottom: 110px;
 }
 
 .debug-panel-header {

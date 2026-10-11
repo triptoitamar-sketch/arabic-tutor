@@ -3,6 +3,7 @@ const lesson = document.getElementById('screen-lesson');
 const ended = document.getElementById('screen-ended');
 const endedTitle = document.getElementById('ended-title');
 const endedSummary = document.getElementById('ended-summary');
+const debugPanel = document.getElementById('debug-panel');
 
 function hideAll() {
   idle.classList.add('hidden');
@@ -13,11 +14,14 @@ function hideAll() {
 export function showIdle() {
   hideAll();
   idle.classList.remove('hidden');
+  debugPanel?.classList.remove('clear-end-button');
 }
 
 export function showLesson() {
   hideAll();
   lesson.classList.remove('hidden');
+  // The fixed End Lesson button overlaps whatever's underneath it.
+  debugPanel?.classList.add('clear-end-button');
 }
 
 export function showEnded({ summary, saved }) {
@@ -25,6 +29,7 @@ export function showEnded({ summary, saved }) {
   endedTitle.textContent = saved ? 'Lesson saved' : 'Lesson ended (save may have failed)';
   endedSummary.textContent = summary || 'No summary captured for this lesson.';
   ended.classList.remove('hidden');
+  debugPanel?.classList.remove('clear-end-button');
 }
 
 export function setIdleHint(text) {

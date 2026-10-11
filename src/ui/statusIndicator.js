@@ -2,6 +2,7 @@ const LABELS = {
   connecting: 'Connecting…',
   listening: 'Listening…',
   speaking: 'Gemini is speaking…',
+  ending: 'Saving lesson… (can take ~20s)',
   reconnecting: 'Reconnecting…',
   disconnected: 'Connection lost — tap End Lesson',
 };

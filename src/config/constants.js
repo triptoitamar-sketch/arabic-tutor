@@ -23,4 +23,6 @@ export const RECONNECT_BACKOFF_MS = [2000, 5000, 10000];
 
 // How long to wait for the model's end-of-lesson summary transcript before
 // giving up and saving a placeholder.
-export const SUMMARY_TIMEOUT_MS = 15000;
+// Generating the one-sentence summary after an interrupted turn has been
+// observed taking ~16s — give real margin above that.
+export const SUMMARY_TIMEOUT_MS = 30000;

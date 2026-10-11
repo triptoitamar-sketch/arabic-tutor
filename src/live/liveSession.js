@@ -216,6 +216,7 @@ export class LiveTutorSession {
   /** Sends the "session ended" trigger and resolves with the model's one-sentence summary (or '' on timeout). */
   async endLesson() {
     if (!this.session) return '';
+    this.onStatusChange('ending');
 
     // Stop sending mic audio first — if voice-activity-detection picks up
     // anything (your voice, road noise) while we're waiting for the
@@ -257,7 +258,7 @@ export class LiveTutorSession {
       const elapsed = Math.round((Date.now() - startedAt) / 1000);
       const receivedSince = this.serverMessageCount - serverMessagesBeforeTrigger;
       this.onDebug(`Still waiting for the summary… (${elapsed}s elapsed, ${receivedSince} server messages received since the trigger)`);
-    }, 3000);
+    }, 5000);
 
     const timeout = new Promise((resolve) =>
       setTimeout(() => {

@@ -131,6 +131,10 @@ button {
   background: var(--connecting);
 }
 
+.status[data-state='ending'] {
+  background: var(--connecting);
+}
+
 .status[data-state='reconnecting'] {
   background: var(--reconnecting);
   color: #1a1a1a;

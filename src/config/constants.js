@@ -23,4 +23,4 @@ export const RECONNECT_BACKOFF_MS = [2000, 5000, 10000];
 
 // How long to wait for the model's end-of-lesson summary transcript before
 // giving up and saving a placeholder.
-export const SUMMARY_TIMEOUT_MS = 10000;
+export const SUMMARY_TIMEOUT_MS = 15000;

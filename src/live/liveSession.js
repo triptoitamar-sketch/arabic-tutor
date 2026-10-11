@@ -226,9 +226,22 @@ export class LiveTutorSession {
       this.onDebug('Mic stopped before requesting the lesson summary.');
     }
 
+    // Explicitly close out the realtime audio stream. Without this, the
+    // server's automatic voice-activity-detection can be left thinking the
+    // user might still be mid-utterance (it was never told the stream
+    // ended, just that packets stopped arriving), which can stall
+    // processing of the text trigger sent right after.
+    try {
+      this.session.sendRealtimeInput({ audioStreamEnd: true });
+      this.onDebug('Signaled end of audio stream.');
+    } catch (err) {
+      this.onDebug(`Could not signal audioStreamEnd: ${err.message}`);
+    }
+
     this.onDebug('Sending end-of-lesson trigger…');
     this.currentOutputTranscript = '';
     this.awaitingSummary = true;
+    const serverMessagesBeforeTrigger = this.serverMessageCount;
 
     const summaryPromise = new Promise((resolve) => {
       this.pendingSummaryResolve = resolve;
@@ -239,13 +252,22 @@ export class LiveTutorSession {
       turnComplete: true,
     });
 
+    const startedAt = Date.now();
+    const ticker = setInterval(() => {
+      const elapsed = Math.round((Date.now() - startedAt) / 1000);
+      const receivedSince = this.serverMessageCount - serverMessagesBeforeTrigger;
+      this.onDebug(`Still waiting for the summary… (${elapsed}s elapsed, ${receivedSince} server messages received since the trigger)`);
+    }, 3000);
+
     const timeout = new Promise((resolve) =>
       setTimeout(() => {
         this.onDebug(`⚠️ Timed out after ${SUMMARY_TIMEOUT_MS / 1000}s waiting for the lesson summary.`);
         resolve('');
       }, SUMMARY_TIMEOUT_MS),
     );
-    return Promise.race([summaryPromise, timeout]);
+    const result = await Promise.race([summaryPromise, timeout]);
+    clearInterval(ticker);
+    return result;
   }
 
   teardown() {

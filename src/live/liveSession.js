@@ -94,7 +94,13 @@ export class LiveTutorSession {
         systemInstruction: { parts: [{ text: this.systemInstruction }] },
         outputAudioTranscription: {},
         sessionResumption: { handle: this.resumptionHandle },
-        contextWindowCompression: { slidingWindow: {} },
+        // Explicit (small) thresholds instead of the defaults (~80% of the
+        // model's 131k-token window). The Live API re-bills the ENTIRE
+        // accumulated conversation on every turn, so without this a lesson
+        // under ~30 min never triggers compression and cost grows with
+        // lesson length. This caps the re-billed context to a few thousand
+        // tokens throughout, keeping cost roughly flat per minute.
+        contextWindowCompression: { slidingWindow: { triggerTokens: 5000, targetTokens: 2500 } },
       },
       callbacks: {
         onopen: () => {

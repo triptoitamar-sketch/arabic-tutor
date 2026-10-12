@@ -71,6 +71,7 @@ export class LiveTutorSession {
         }
       },
       onLevel: (level) => this.onMicLevel(level),
+      onDebug: (msg) => this.onDebug(msg),
     });
 
     this.onDebug('Mic capture started.');

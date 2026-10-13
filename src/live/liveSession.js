@@ -100,7 +100,7 @@ export class LiveTutorSession {
         // under ~30 min never triggers compression and cost grows with
         // lesson length. This caps the re-billed context to a few thousand
         // tokens throughout, keeping cost roughly flat per minute.
-        contextWindowCompression: { slidingWindow: { triggerTokens: 5000, targetTokens: 2500 } },
+        contextWindowCompression: { triggerTokens: '5000', slidingWindow: { targetTokens: '2500' } },
       },
       callbacks: {
         onopen: () => {
